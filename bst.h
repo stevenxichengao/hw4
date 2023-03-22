@@ -494,9 +494,15 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
     // TODO
 		if(root_==NULL) return;
 		Node<Key, Value> * temp = internalFind(key);
+
 		while(temp!=NULL){
 			if(temp->getKey()==key) {
 				if(temp->getLeft()==NULL && temp->getRight()==NULL){
+					if(temp==root_){
+						delete temp;
+						root_ = NULL;
+						break;
+					} 
 					if(temp->getParent()->getLeft()==temp){
 						temp->getParent()->setLeft(NULL);
 						delete temp;
@@ -509,6 +515,12 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
 					}
 				}
 				else if(temp->getLeft()==NULL && temp->getRight()!=NULL){
+					if(temp==root_){
+						root_ = temp->getRight();
+						root_->setParent(NULL);
+						delete temp;
+						break;
+					}
 					if(temp->getParent()->getLeft()==temp){
 						temp->getParent()->setLeft(temp->getRight());
 						temp->getRight()->setParent(temp->getParent());
@@ -523,6 +535,12 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
 					}
 				}
 				else if(temp->getLeft()!=NULL && temp->getRight()==NULL){
+					if(temp==root_){
+						root_ = root_->getLeft();
+						root_->setParent(NULL);
+						delete temp;
+						break;
+					}
 					if(temp->getParent()->getLeft()==temp){
 						temp->getParent()->setLeft(temp->getLeft());
 						temp->getLeft()->setParent(temp->getParent());
@@ -536,7 +554,7 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
 						break;
 					}
 				}
-				else if(temp->getLeft()!=NULL && temp->getRight()==NULL){
+				else if(temp->getLeft()!=NULL && temp->getRight()!=NULL){
 					nodeSwap(predecessor(temp), temp);
 				}
 			}
@@ -577,7 +595,7 @@ BinarySearchTree<Key, Value>::successor(Node<Key, Value>* current)
 {
 		if(current->getRight()!=NULL){
 			current = current->getRight();
-    	while(current->getLeft()!=NULL){
+    	    while(current->getLeft()!=NULL){
 				current = current->getLeft();
 			}
 			return current;
@@ -604,6 +622,7 @@ void BinarySearchTree<Key, Value>::clear()
 {
     // TODO
 		clearHelper(root_);
+        root_ = NULL;
 }
 
 template<typename Key, typename Value>
